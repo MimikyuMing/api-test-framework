@@ -94,3 +94,24 @@
 - `requests.request()` 每次创建新 Session，请求完就丢弃
 - `requests.Session()` 手动管理生命周期，可复用连接和 Cookie
 - `requests.get()` 等价于 `requests.request("GET", ...)`，内部也是临时 Session
+
+
+## 补充：重试策略的边界
+
+**问题**：如果测试本身就是在测错误路径（如缺字段返回 500），默认重试会浪费请求，也拖慢测试。
+
+**解决**：`request` 方法加 `retry=None` 参数，允许单次请求覆盖默认重试次数。
+
+```python
+def request(self, method, path, retry=None, **kwargs):
+    max_retry = self.retry if retry is None else retry
+    ...
+```
+测试里：
+```python
+expected = case["expected_status"]
+retry = 0 if expected >= 400 else None
+resp = client.post("/booking", json=case["payload"], retry=retry)
+```
+
+重试策略要区分“预期失败”和“非预期故障”，不能一刀切

@@ -53,10 +53,9 @@
 
 ## 7. DELETE /booking/{id}
 
-- 方法：DELETE
-- URL：/booking/{id}
-- 请求头：Cookie: token=xxx
-- 响应：实测返回 200（官方文档写 201，以实测为准）
+- 响应：实测返回 200 或 201，不稳定
+- 以官方文档 201 为准，但断言时接受两者
+- 更稳的做法：不断言状态码，断言删除后 GET 返回 404
 
 ## 注意事项
 
@@ -64,3 +63,16 @@
 - 服务端偶尔返回 503，重试即可
 - Windows 下 curl 需用 curl.exe，且需加 --ssl-revoke-best-effort
 - 用 Python requests 调接口比 curl 更稳
+
+## 异常场景实测
+
+### POST /booking 缺必填字段
+
+- 缺少 `firstname` 时，返回 500
+- 服务端未做字段校验，直接内部错误
+- 这类 500 是**预期失败**，测试时不应重试
+
+### POST /booking totalprice 边界
+
+- `totalprice: 0`：返回 200，正常创建
+- 服务端不校验 totalprice 下限

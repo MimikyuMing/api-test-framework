@@ -11,17 +11,18 @@ class HttpClient:
         self.session = requests.Session()
         self.logger = get_logger()
 
-    def request(self, method, path, **kwargs):
+    def request(self, method, path, retry=None, **kwargs):
         url = f"{self.base_url}{path}"
+        max_retry = self.retry if retry is None else retry
         last_exc = None
-        for attempt in range(self.retry + 1):
+        for attempt in range(max_retry + 1):
             try:
                 self.logger.info(f"--> {method} {url}")
                 resp = self.session.request(
                     method, url, timeout=self.timeout, **kwargs
                 )
                 self.logger.info(f"<-- {resp.status_code} {url}")
-                if resp.status_code >= 500 and attempt < self.retry:
+                if resp.status_code >= 500 and attempt < max_retry:
                     self.logger.warning(f"server error, retrying ({attempt + 1})")
                     continue
                 return resp
