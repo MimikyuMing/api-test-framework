@@ -28,3 +28,18 @@ def auth_token(client, config):
 @pytest.fixture(scope="session")
 def auth_headers(auth_token):
     return {"Cookie": f"token={auth_token}"}
+
+
+@pytest.fixture
+def new_booking_for_negative(client):
+    payload = {
+        "firstname": "Neg",
+        "lastname": "Test",
+        "totalprice": 50,
+        "depositpaid": True,
+        "bookingdates": {"checkin": "2026-01-01", "checkout": "2026-01-05"},
+    }
+    resp = client.post("/booking", json=payload)
+    assert resp.status_code == 200
+    booking_id = resp.json()["bookingid"]
+    yield booking_id, payload
