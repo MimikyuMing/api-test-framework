@@ -1,6 +1,7 @@
 import pytest
 
-from src.utils.assert_util import assert_field, assert_status_code
+from src.models.booking import BookingResponse
+from src.utils.assert_util import assert_field, assert_status_code, assert_schema
 
 
 @pytest.fixture
@@ -30,6 +31,7 @@ def test_create_booking(client):
     }
     resp = client.post("/booking", json=payload)
     assert_status_code(resp, 200)
+    assert_schema(resp.json(), BookingResponse)
     assert_field(resp.json()["booking"], "firstname", "Jim")
 
 
