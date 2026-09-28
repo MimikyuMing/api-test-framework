@@ -1,3 +1,6 @@
+from src.utils.assert_util import assert_field, assert_status_code
+
+
 def test_full_crud_flow(client, auth_headers):
     payload = {
         "firstname": "Flow",
@@ -8,27 +11,29 @@ def test_full_crud_flow(client, auth_headers):
         "additionalneeds": "Lunch",
     }
 
-    # 1. create
-    create_resp = client.post("/booking", headers=auth_headers, json=payload)
-    assert create_resp.status_code == 200, f"创建失败: {create_resp.text}"
+    # 1. 创建
+    create_resp = client.post("/booking", json=payload)
+    assert_status_code(create_resp, 200)
     booking_id = create_resp.json()["bookingid"]
     assert booking_id > 0
 
-    # 2. get
+    # 2. 查询
     get_resp = client.get(f"/booking/{booking_id}")
-    assert get_resp.status_code == 200
-    assert get_resp.json()["firstname"] == "Flow"
+    assert_status_code(get_resp, 200)
+    assert_field(get_resp.json(), "firstname", "Flow")
 
-    # 3. update
+    # 3. 更新
     payload["firstname"] = "Updated"
-    update_resp = client.put(f"/booking/{booking_id}", headers=auth_headers, json=payload)
-    assert update_resp.status_code == 200
-    assert update_resp.json()["firstname"] == "Updated"
+    put_resp = client.put(
+        f"/booking/{booking_id}", json=payload, headers=auth_headers
+    )
+    assert_status_code(put_resp, 200)
+    assert_field(put_resp.json(), "firstname", "Updated")
 
-    # 4. delete
-    delete_resp = client.delete(f"/booking/{booking_id}", headers=auth_headers)
-    assert delete_resp.status_code in (200,201), f"删除异常: {delete_resp.status_code}"
+    # 4. 删除
+    del_resp = client.delete(f"/booking/{booking_id}", headers=auth_headers)
+    assert del_resp.status_code in (200, 201), f"删除异常: {del_resp.status_code}"
 
-    # 5. get_deleted
-    get_del_resp = client.get(f"/booking/{booking_id}")
-    assert get_del_resp.status_code == 404
+    # 5. 确认已删除
+    final_resp = client.get(f"/booking/{booking_id}")
+    assert_status_code(final_resp, 404)
