@@ -1,6 +1,11 @@
+import allure
+
+
 from src.utils.assert_util import assert_field, assert_status_code
 
-
+@allure.feature("Booking")
+@allure.story("CRUD Flow")
+@allure.title("完整 CRUD 闭环")
 def test_full_crud_flow(client, auth_headers):
     payload = {
         "firstname": "Flow",
