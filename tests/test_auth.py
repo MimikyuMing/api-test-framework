@@ -1,7 +1,7 @@
 import allure
 
-
 from src.utils.assert_util import assert_field, assert_status_code
+
 
 @allure.feature("Auth")
 @allure.title("登录成功")

@@ -1,5 +1,4 @@
 from datetime import date
-from typing import Optional
 
 from pydantic import BaseModel
 
@@ -15,7 +14,7 @@ class Booking(BaseModel):
     totalprice: int
     depositpaid: bool
     bookingdates: BookingDates
-    additionalneeds: Optional[str] = None
+    additionalneeds: str | None = None
 
 
 class BookingResponse(BaseModel):

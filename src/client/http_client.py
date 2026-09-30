@@ -4,6 +4,8 @@ from src.utils.logger import get_logger
 
 
 class HttpClient:
+    """统一的 HTTP 客户端封装，处理 base_url、超时、重试和日志。"""
+
     def __init__(self, base_url, timeout=10, retry=2):
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
@@ -12,6 +14,17 @@ class HttpClient:
         self.logger = get_logger()
 
     def request(self, method, path, retry=None, **kwargs):
+        """发送 HTTP 请求。
+
+        Args:
+            method: HTTP 方法，如 GET、POST。
+            path: 相对路径，如 /booking。
+            retry: 覆盖默认重试次数；传 0 表示不重试。
+            **kwargs: 透传给 requests 的参数，如 json、headers。
+
+        Returns:
+            requests.Response 对象。
+        """
         url = f"{self.base_url}{path}"
         max_retry = self.retry if retry is None else retry
         last_exc = None
@@ -30,7 +43,7 @@ class HttpClient:
                 last_exc = e
                 self.logger.warning(f"attempt {attempt + 1} failed: {e}")
         raise last_exc
-    
+
     def get(self, path, **kwargs):
         return self.request("GET", path, **kwargs)
 

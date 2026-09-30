@@ -1,10 +1,8 @@
-import pytest
 import allure
+import pytest
 
-
-from src.utils.data_loader import load_yaml
 from src.utils.assert_util import assert_status_code
-
+from src.utils.data_loader import load_yaml
 
 CASES = load_yaml("booking_cases.yaml")["create_booking"]
 

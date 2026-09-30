@@ -1,8 +1,8 @@
-import pytest
 import allure
+import pytest
 
 from src.models.booking import BookingResponse
-from src.utils.assert_util import assert_field, assert_status_code, assert_schema
+from src.utils.assert_util import assert_field, assert_schema, assert_status_code
 
 
 @pytest.fixture
